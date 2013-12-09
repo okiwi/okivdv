@@ -4,7 +4,8 @@ okivdv
 Une application de vote de valeur
 
 
-== Install local
+Install local
+=============
 
 Il faut maven 
 Il faut java 1.6 (au moins)
