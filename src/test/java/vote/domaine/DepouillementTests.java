@@ -8,7 +8,7 @@ import org.junit.Test;
 import java.util.Map;
 
 import static org.fest.assertions.Assertions.*;
-import static org.fest.assertions.MapAssert.entry;
+import static org.fest.assertions.MapAssert.*;
 
 public class DepouillementTests {
 
@@ -19,49 +19,58 @@ public class DepouillementTests {
 
     @Test
     public void peutDonnerLesResultats() {
-        Vote vote = unVotePour("Francois Hollande");
+        Bulletin bulletin = unVotePour("Francois Hollande");
 
-        Map<String, Integer> resultats = depouillement.depouille(Lists.newArrayList(vote));
+        Map<String, Integer> resultats = depouillement.depouille(Lists.newArrayList(bulletin));
 
         assertThat(resultats).hasSize(1);
         assertThat(resultats.containsKey("Francois Hollande")).isTrue();
     }
 
-    private Vote unVotePour(String candidat) {
+    private Bulletin unVotePour(String candidat) {
         return unVotePour(candidat, 2);
     }
 
     @Test
     public void peutDonnerLaNoteDUnCandidat() {
-        Vote vote = unVotePour("Francois Hollande", 2);
+        Bulletin bulletin = unVotePour("Francois Hollande", 2);
 
-        Map<String, Integer> resultats = depouillement.depouille(Lists.newArrayList(vote));
+        Map<String, Integer> resultats = depouillement.depouille(Lists.newArrayList(bulletin));
 
         assertThat(resultats).includes(entry("Francois Hollande", 2));
     }
 
     @Test
     public void peutDonnerUneAutreNoteAuCandidat() {
-        Vote vote = unVotePour("Francois Hollande", -1);
+        Bulletin bulletin = unVotePour("Francois Hollande", -1);
 
-        Map<String, Integer> resultats = depouillement.depouille(Lists.newArrayList(vote));
+        Map<String, Integer> resultats = depouillement.depouille(Lists.newArrayList(bulletin));
 
         assertThat(resultats).includes(entry("Francois Hollande", -1));
     }
 
     @Test
-    @Ignore("la prochaine fois")
     public void peutVoterPourUnAutreCandidat() {
-        Vote vote = unVotePour("Francois Bayrou");
+        Bulletin bulletin = unVotePour("Francois Bayrou");
 
-        Map<String, Integer> resultats = depouillement.depouille(Lists.newArrayList(vote));
+        Map<String, Integer> resultats = depouillement.depouille(Lists.newArrayList(bulletin));
 
         assertThat(resultats.containsKey("Francois Bayrou")).isTrue();
-
     }
 
-    private Vote unVotePour(String candidat, int note) {
-        return new Vote().pour(candidat).avecNote(note);
+    @Test
+    @Ignore
+    public void peutCumulerLesNotes() {
+        Bulletin premierBulletin = unVotePour("Francois Bayrou", 1);
+        Bulletin deuxiemeBulletin = unVotePour("Francois Bayrou", 2);
+
+        Map<String, Integer> resultats = depouillement.depouille(Lists.newArrayList(premierBulletin, deuxiemeBulletin));
+
+        assertThat(resultats).includes(entry("Francois Bayrou", 3));
+    }
+
+    private Bulletin unVotePour(String candidat, int note) {
+        return new Bulletin().pour(candidat).avecNote(note);
 
     }
 
