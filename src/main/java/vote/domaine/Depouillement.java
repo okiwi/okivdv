@@ -12,12 +12,35 @@ public class Depouillement {
 
     public Map<String, Integer> depouille(List<Bulletin> bulletins) {
         Map<String,Integer> resultat = Maps.newConcurrentMap();
-        Set<String> candidats = Sets.newHashSet();
-        candidats.addAll(bulletins.get(0).candidats());
-        for (String candidat : candidats) {
-            resultat.put(candidat, bulletins.get(0).noteDe(candidat).get());
+        for (String candidat : tousLesCandidats(bulletins)) {
+            resultat.put(candidat, scoreDe(candidat, bulletins));
         }
-
         return resultat;
+    }
+
+    private int scoreDe(String candidat, List<Bulletin> bulletins) {
+        int score = 0;
+        for (Bulletin bulletin : bulletins) {
+            score+= bulletin.noteDe(candidat).or(0);
+        }
+        return score;
+    }
+
+    private Set<String> tousLesCandidats(List<Bulletin> bulletins) {
+        Set<String> candidats = Sets.newHashSet();
+        for (Bulletin bulletin : bulletins) {
+            candidats.addAll(bulletin.candidats());
+        }
+        return candidats;
+    }
+
+    public String gagnant(Map<String, Integer> dépouillement) {
+        Map.Entry < String, Integer > meilleurCandidat = dépouillement.entrySet().iterator().next();
+        for(Map.Entry < String, Integer > candidat:dépouillement.entrySet()){
+            if( meilleurCandidat.getValue()< candidat.getValue()) {
+                meilleurCandidat = candidat;
+            }
+        }
+        return meilleurCandidat.getKey();
     }
 }
